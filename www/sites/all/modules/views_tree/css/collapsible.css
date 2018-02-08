@@ -1,0 +1,36 @@
+
+.views_tree_collapsed,
+.views_tree_expanded,
+.views_tree_collapsed ul li,
+.views_tree_expanded ul li {
+  list-style-type: none;
+}
+
+.view-view-themes .view-content ul:first-child {
+  padding-left: 5px;
+  list-style-type: none;
+}
+.view-view-themes .view-content ul:first-child li.views_tree_leaf {
+  padding-left: 24px;
+}
+
+
+.views_tree_link {
+  width: 25px;
+  height: 100%;
+  float: left;
+}
+	
+.views_tree_link a {
+  margin: 0 5px 0 0;
+  text-indent: -9999px;
+  display: block;
+}
+
+.views_tree_link_collapsed a {
+  background: #ffffff url(../images/list-add.png) no-repeat center center;
+}
+
+.views_tree_link_expanded a {
+  background: #ffffff url(../images/list-remove.png) no-repeat center center;
+}

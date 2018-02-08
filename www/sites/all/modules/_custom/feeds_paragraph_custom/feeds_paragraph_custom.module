@@ -1,0 +1,269 @@
+<?php
+
+/**
+ * Implements hook_feeds_processor_targets_alter().
+ */
+function feeds_paragraph_custom_feeds_processor_targets_alter(&$targets, $type, $bundle) {
+    if ($type == 'node') {
+        $targets['sequences_temp'] = array(
+            'name' => t('Sequence paragraph for field_sequences'),
+            'description' => t('If populated and host entity has a field_sequences field, this value will be saved as a sequence paragraph to this field'),
+            'callback' => 'feeds_paragraph_custom_feeds_sequence_paragraph_set_target',
+        );
+    }
+}
+
+/**
+ * Mapping callback for the "Sequence paragraph for field_sequences" target
+ */
+function feeds_paragraph_custom_feeds_sequence_paragraph_set_target($source, $entity, $target, $value,
+                                                                 $mapping) {
+
+    if (!empty($value[0])) {
+        $entity->sequences_temp = feeds_paragraph_custom_clean_html($value[0]);
+        //$entity->sequences_temp = $value[0]; // On zappe le clean html.
+    }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function feeds_paragraph_custom_node_insert($node) {
+// If the node is being created and has a sequences_temp value from Feeds,
+// create and attach a new paragraph entity
+    if (isset($node->sequences_temp)) {
+        feeds_paragraph_custom_create_attach_field_sequences_paragraph($node,
+            $node->sequences_temp);
+    }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function feeds_paragraph_custom_node_update($node) {
+// If the node is being updated and has a sequences_temp value from Feeds, process it
+    if (isset($node->sequences_temp)) {
+        $node_wrapper = entity_metadata_wrapper('node', $node);
+
+// If there are paragraphs, and the first one is a sequences, then update it
+        if (!empty($node_wrapper->field_sequences[0])) {
+            if ($node_wrapper->field_sequences[0]->getBundle() == 'sequence') {
+                $old_value = $node_wrapper->field_sequences[0]->field_para_body->value();
+                if ($old_value['value'] != $node->sequences_temp) {
+                    $node_wrapper->field_sequences[0]->field_para_body->set(array(
+                        'value' => $node->sequences_temp,
+                        'format' => 'full_html',
+                    ));
+                    $node_wrapper->field_sequences[0]->save();
+                }
+            }
+        }
+
+        else {
+// We have sequences_temp data we need to use, so create and attach a new paragraph entity
+            feeds_paragraph_custom_create_attach_field_sequences_paragraph($node, $node->sequences_temp);
+        }
+    }
+
+}
+/*********************** PIERRE = Le coeur du module, la création du paragraph item ***********/
+/**
+ * Creates a new sequence paragraph entity and attaches it to field_sequences
+ *
+ * @param object $node
+ *   Node to attach the paragraph entity to
+ * @param string $content
+ *   Content for the entity
+ */
+function feeds_paragraph_custom_create_attach_field_sequences_paragraph($node, $content) {
+
+    //dpm('NODE');
+    //dpm($node);
+    //dpm('CONTENT');
+    //dpm($content);
+    $data = array();
+    $data['columns'] = explode('__',$content);
+    $data['time'] = explode('|', $data['columns'][0]);
+    $data['sujet'] = explode('|', $data['columns'][1]);
+    $data['laec'] = explode('|', $data['columns'][2]);
+    $data['lien-sequence'] = explode('|', $data['columns'][3]);
+    $data['themes'] = explode('|', $data['columns'][4]);
+    dpm('DATA');
+    dpm($data);
+    $themes_node = array();
+
+
+    // Create a new "Sequence paragraph" paragraph item
+    /**
+     * http://www.drupalcontrib.org/api/drupal/contributions%21entity%21entity.module/function/entity_create/7
+     * entity_create($entity_type, array $values)
+     * $entity_type: The type of the entity.
+     * $values: An array of values to set, keyed by property name. If the entity type has bundles the bundle
+     * key has to be specified.
+     */
+
+    for ($i=0; $i<count($data['lien-sequence']); $i++) {
+
+        $paragraph = entity_create('paragraphs_item', array(
+                'field_name' => 'field_sequences',
+                'bundle' => 'sequence')
+        );
+        $time = 'Lien Séquence';
+        if($data['time'][$i] != "!"){
+            $time = $data['time'][$i];
+            /*
+            $paragraph->field_debut_fin[$node->language][$i] = array(
+                'value' => $data['time'][$i],
+                'format' => 'full_html',
+            );
+            */
+        }
+        // Fields du paragraph bundle sequences
+        $paragraph->field_lien_video[$node->language][$i] = array(
+            'url' => $data['lien-sequence'][$i],
+            'title' => $time,
+            //'delta' => 0,
+        );
+
+        $paragraph->field_description_sequence[$node->language][$i] = array(
+            'value' => $data['sujet'][$i],
+            'format' => 'full_html',
+        );
+
+        if($data['laec'][$i] != "!") {
+            $liens_laec= explode(' ', $data['laec'][$i]);
+            $liens_insert = array();
+            for ($y=0; $y<count($liens_laec); $y++) {
+                $title = '';
+                if(strpos($liens_laec[$y], 'laec.fr') !== false || strpos($liens_laec[$y], 'avenirencommun.fr') !== false) {
+                    $title = 'Le programme';
+                }
+                else {
+                    $title = 'Source';
+                }
+                $liens_insert[] = array('url' => $liens_laec[$y], 'title' => $title);
+            }
+                $paragraph->field_lien_laec[$node->language] = $liens_insert;
+        }
+
+
+        // Il faut faire une recherche par tag, afin de voir si le tag existe deja dans la table.
+        // Si il existe, on récupéré son tid.
+        // Si il existe pas, on le crée et on récupére son tid.
+        // On rentre ensuite le field avec le delta et le tid.
+
+        if($data['themes'][$i] != "!" & !empty($data['themes'][$i])) {
+            $themes= explode(',', $data['themes'][$i]);
+            //dpm($themes);
+            $themes_insert = array();
+            for ($y=0; $y<count($themes); $y++){
+                //dpm($themes[$y]);
+
+                //fonction pour rechercher et retourner une array avec le tid et delta
+                $themes_insert[] = custom_search_taxonomy_term($themes[$y], $y);
+                /*
+                $taxo_search = taxonomy_get_term_by_name($themes[$y]);
+                //dpm('TAXO SEARCH : ');
+                //dpm($taxo_search);
+                //dpm("key : " . key($taxo_search));
+                if(!empty($taxo_search)) {
+                    $themes_insert[] = array(
+                        'tid' => key($taxo_search),
+                        'delta' => $y,
+                    );
+                }
+                elseif (empty($taxo_search)) {
+                    $tid = custom_create_taxonomy_term($themes[$y], 2);
+                    $themes_insert[] = array(
+                        'tid' => $tid,
+                        'delta' => $y,
+                    );
+                }
+                */
+                if (!in_array($themes[$y], $themes_node)) {
+                    $themes_node[] = $themes[$y];
+                    //dpm($themes_node);
+                    //$themes_insert_node[] = custom_search_taxonomy_term($themes[$y], $y);
+                }
+            }
+            //dpm("themes to insert: ");
+            //dpm($themes_insert);
+            $paragraph->field_tags_themes[$node->language] = $themes_insert;
+        }
+
+        $paragraph->setHostEntity('node', $node);
+        $paragraph->save(TRUE);
+        //dpm($paragraph);
+
+        // Add the new paragraph item to the parent node
+        $node->field_sequences[$node->language][$i] = array(
+            'value' => $paragraph->item_id,
+            'revision_id' => $paragraph->revision_id
+        );
+        //field_attach_update('node', $node);
+
+
+    }
+    // Ajout des themes à la node
+    //dpm($themes_node);
+    $themes_insert_node = array();
+    for ($y=0; $y<count($themes_node); $y++) {
+        $themes_insert_node[] = custom_search_taxonomy_term($themes_node[$y], $y);
+    }
+    //dpm($themes_insert_node);
+    $node->field_tags_themes[$node->language] = $themes_insert_node;
+    dpm($node);
+    field_attach_update('node', $node);
+}
+
+function custom_search_taxonomy_term($name, $y) {
+    //fonction pour rechercher et retourn une array avec le tid et delta
+    $taxo_search = taxonomy_get_term_by_name($name);
+    //dpm('TAXO SEARCH : ');
+    //dpm($taxo_search);
+    //dpm("key : " . key($taxo_search));
+    if(!empty($taxo_search)) {
+        return array(
+            'tid' => key($taxo_search),
+            'delta' => $y,
+        );
+    }
+    elseif (empty($taxo_search)) {
+        $tid = custom_create_taxonomy_term($name, 2);
+        return array(
+            'tid' => $tid,
+            'delta' => $y,
+        );
+    }
+}
+
+function custom_create_taxonomy_term($name, $vid) {
+    $term = new stdClass();
+    $term->name = $name;
+    $term->vid = $vid;
+    taxonomy_term_save($term);
+    return $term->tid;
+}
+
+/**
+ * Cleans up HTML (probably not the most robust code, but it'll do)
+ *
+ * @param string $html
+ *   HTML to cleanup
+ *
+ * @return string
+ *   Cleaned HTML
+ */
+function feeds_paragraph_custom_clean_html($html) {
+    $html = str_replace("\n", ' ', $html);
+    $html = str_replace('<b>', '<strong>', $html);
+    $html = str_replace('</b>', '</strong>', $html);
+
+    $replacement = '';
+    $patterns = array(
+        '/<p>[  ]*<\/p>[  ]*/i', // These look like two spaces, but one is character 160
+    );
+
+    $html = preg_replace($patterns, $replacement, $html);
+    return $html;
+}

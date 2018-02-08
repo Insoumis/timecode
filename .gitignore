@@ -1,0 +1,12 @@
+# Ignore configuration files that may contain sensitive information.
+/www/sites/*/settings*.php
+
+# Ignore paths that contain user-generated content.
+/www/sites/*/files
+/www/sites/*/private
+
+# Ignore some IDE files
+/.project
+
+# Ignore local working folder
+/local
