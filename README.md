@@ -12,10 +12,12 @@ requirements :
 
 steps :
 
-* clone this repository (git clone)
+* clone this repository (git clone) and initialize some local folders
 
     $ cd timecode
     $ mkdir local
+    $ mkdir www/sites/default/files
+    $ sudo chown -R www-data:www-data www/sites/default/files
 
 * run servers
 
