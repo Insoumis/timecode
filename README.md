@@ -4,34 +4,34 @@
 
 Setup for linux (tested on ubuntu 16.04)
 
-requirements :
+## requirements
 
 * git
 * docker
 * docker-compose
 
-steps :
+## steps
 
-* clone this repository (git clone) and initialize some local folders
+clone this repository (git clone) and initialize some local folders
 
     $ cd timecode
     $ mkdir local
     $ mkdir www/sites/default/files
     $ sudo chown -R www-data:www-data www/sites/default/files
 
-* run servers
+run servers
 
     $ docker-compose up drupal
 
-* download a timecode mysql backup to **local/backup.mysql**
+download a timecode mysql backup to **local/backup.mysql**
 
-* load database (this may take a while)
+load database (this may take a while)
 
     $ cat local/backup.mysql | docker exec -i timecode_mysql_1 mysql -u timecode-user --password=timecode-pwd timecode-db
 
-* open your browser at http://localhost:8080
+open your browser at http://localhost:8080
 
-* finally stop servers when you're done
+finally stop servers when you're done
 
     $ docker-compose stop
 
