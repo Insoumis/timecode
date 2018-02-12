@@ -25,9 +25,58 @@ $(document).ready(function(e) {
                 scrollTop: $('.field-name-field-youtube').find('iframe').offset().top
             }, 700);
         });
+
+
+        $('.field-name-field-lien-video').find('a').each(function(){
+
+            var link_timecode = $(this).attr('href');
+
+            $(this).after('<a href="' + link_timecode + '" class="link-share-twitter"><img src="/sites/all/themes/fi_subtheme/img/twitter-24.png" alt="icone twitter" /></a>');
+
+        });
+
+        $('.field-name-field-lien-video').find('a.link-share-twitter').click(function(e){
+
+            e.preventDefault();
+
+            //Récupère le lien + le titre de la séquence
+            var url_for_twitter = $(this).attr('href');
+            var text = $(this).closest('.paragraphs-item-sequence').find('.group-left .field-item p a').text();
+
+
+            //Récupère les thèmes pour les ajouter en #hastag séparés
+            $(this).closest('.paragraphs-item-sequence').find('.group-middle .field-item a').each(function(){
+
+                //Crée la liste des hashtag en retirant les tirets et les espaces
+                //var array_text = $(this).text().split(/[' -]+/);
+                var array_text = $(this).text().split(/^\d+|[ \-'%]+/);
+                var hashtag = '';
+
+                //Met en majuscule la première lettre de chaque mot du hashtag
+                array_text.forEach(function(item) {
+
+                    hashtag += item.substr(0,1).toUpperCase()+item.substr(1);
+
+                });
+
+
+                //Ajoute le hasthag
+                text += ' #' + hashtag;
+
+            });
+
+            //Ajoute le twitter du compte vidéo FI en source
+            text += ' via @videosFI';
+
+            //Ouvre la fenêtre de partage Twitter
+            window.open('http://twitter.com/share?url='+encodeURIComponent(url_for_twitter)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
+            
+        });
+
     }
 
 });
+
 // Add an event listener to the existing iframe#youtube_video
 var player;
 function onYouTubeIframeAPIReady() {
