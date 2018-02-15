@@ -6,14 +6,15 @@ Setup for linux (tested on ubuntu 16.04)
 
 ## requirements
 
-* git
-* docker
-* docker-compose
+* git (2.7.4 or higher)
+* docker (17.05.0-ce or higher)
+* docker-compose (1.19.0 or higher)
 
 ## steps
 
-clone this repository (git clone) and initialize some local folders
+clone this repository and initialize some local folders
 
+    $ git clone git@github.com:Insoumis/timecode.git
     $ cd timecode
     $ mkdir local
     $ mkdir www/sites/default/files
