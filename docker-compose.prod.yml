@@ -1,0 +1,26 @@
+version: '2.2'
+
+services:
+
+  drupal:
+    ports:
+      - 8765:80
+    env_file:
+      - prod.env
+    cpus: 1
+    mem_limit: 512m
+
+  mysql:
+    volumes:
+      - ./local/mysql:/var/lib/mysql
+    env_file:
+      - prod.env
+    cpus: 1
+    mem_limit: 1g
+
+  drush:
+    env_file:
+      - prod.env
+    cpus: 1
+    mem_limit: 512m
+

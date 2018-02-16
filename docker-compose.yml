@@ -4,19 +4,14 @@ services:
 
   drupal:
     image: drupal:7.56-apache
-    ports:
-      - 8080:80
     volumes:
       - ./www/sites:/var/www/html/sites
       - /var/www/html
     links:
       - mysql
-    env_file:
-      - shared.env
+
   mysql:
     image: mysql:5
-    env_file:
-      - shared.env
 
   drush:
     image: drush/drush:7
@@ -25,5 +20,3 @@ services:
     working_dir: /var/www/html
     links:
       - mysql
-    env_file:
-      - shared.env

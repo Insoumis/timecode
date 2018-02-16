@@ -5,5 +5,7 @@
 # Ignore some IDE files
 /.project
 
-# Ignore local working folder
+# Ignore local files and directories
 /local
+/prod.env
+/docker-compose.override.yml

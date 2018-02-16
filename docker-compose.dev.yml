@@ -1,0 +1,17 @@
+version: '2.2'
+
+services:
+
+  drupal:
+    ports:
+      - 8080:80
+    env_file:
+      - dev.env
+
+  mysql:
+    env_file:
+      - dev.env
+
+  drush:
+    env_file:
+      - dev.env
