@@ -9,6 +9,7 @@ services:
       - prod.env
     cpus: 1
     mem_limit: 512m
+    restart: always
 
   mysql:
     volumes:
@@ -17,6 +18,7 @@ services:
       - prod.env
     cpus: 1
     mem_limit: 1g
+    restart: always
 
   drush:
     env_file:
