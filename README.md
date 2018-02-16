@@ -64,3 +64,22 @@ create the docker compose file for production
     $ cp docker-compose.prod.yml docker-compose.override.yml
 
 and replace some values with production settings (exposed port and resources limits)
+
+# Manage containers
+
+to run containers detached : 
+
+    $ docker-compose up -d app
+
+to stop all containers : 
+
+    $ docker-compose stop
+
+to just run the mysql container : 
+
+    $ docker-compose up -d mysql
+
+to just stop the app container : 
+
+    $ docker-compose stop app
+
