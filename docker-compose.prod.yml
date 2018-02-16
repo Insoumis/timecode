@@ -5,6 +5,10 @@ services:
   app:
     ports:
       - 8765:80
+    cpus: 1
+    mem_limit: 512m
+
+  php:
     env_file:
       - prod.env
     cpus: 1

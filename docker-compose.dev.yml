@@ -5,6 +5,8 @@ services:
   app:
     ports:
       - 8080:80
+
+  php:
     env_file:
       - dev.env
 
