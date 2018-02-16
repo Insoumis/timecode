@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
 
-  drupal:
+  app:
     image: drupal:7.56-apache
     volumes:
       - ./www/sites:/var/www/html/sites
@@ -16,7 +16,7 @@ services:
   drush:
     image: drush/drush:7
     volumes_from:
-      - drupal
+      - app
     working_dir: /var/www/html
     links:
       - mysql

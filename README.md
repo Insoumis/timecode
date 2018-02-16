@@ -23,7 +23,7 @@ clone this repository and initialize some local folders
 
 run servers
 
-    $ docker-compose up drupal
+    $ docker-compose up app
 
 download a timecode mysql backup to **local/backup.mysql**
 
