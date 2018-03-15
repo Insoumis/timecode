@@ -31,7 +31,7 @@ $(document).ready(function(e) {
 
             var link_timecode = $(this).attr('href');
 
-            $(this).after('<a href="' + link_timecode + '" class="link-share-twitter"><img src="/sites/all/themes/fi_subtheme/img/twitter-24.png" alt="icone twitter" /></a>');
+            $(this).after('<a href="' + link_timecode + '" class="link-share-twitter"><img src="/sites/all/themes/fi_subtheme/img/twitter-24.png" alt="icone twitter" /></a><a href="' + link_timecode + '" class="link-share-facebook"><img src="/sites/all/themes/fi_subtheme/img/facebook-24.png" alt="icone facebook" /></a>');
 
         });
 
@@ -71,6 +71,20 @@ $(document).ready(function(e) {
             //Ouvre la fenêtre de partage Twitter
             window.open('http://twitter.com/share?url='+encodeURIComponent(url_for_twitter)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
             
+        });
+
+        $('.field-name-field-lien-video').find('a.link-share-facebook').click(function(e){
+
+            e.preventDefault();
+
+            //Récupère le lien + le titre de la séquence
+            var url_for_facebook = $(this).attr('href');
+            //var text = $(this).closest('.paragraphs-item-sequence').find('.group-left .field-item p a').text();
+
+            //Ouvre la fenêtre de partage Facebook
+            /*window.open('http://www.facebook.com/sharer.php?u=' + encodeURIComponent(url_for_facebook) + '&t=' + encodeURIComponent(text), 'sharer', 'toolbar=0,status=0,width=550,height=450');*/
+            window.open('http://www.facebook.com/sharer.php?u=' + encodeURIComponent(url_for_facebook), 'sharer', 'toolbar=0,status=0,width=550,height=450');
+
         });
 
     }
