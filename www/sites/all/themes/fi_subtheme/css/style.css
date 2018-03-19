@@ -8846,10 +8846,24 @@ footer{
     color: #fff !important;
 }
 
+/*----- RESULTATS RECHERCHE GENERALE -----------------------------*/
 
+#block-system-main article h2 a{
+	font-size: 25px;
+}
 
+#block-system-main footer{
+	box-shadow: none;
+}
 
+#block-system-main footer .list-inline>li {
+    display: inline-block;
+    width: 100%;
+    text-align: right;
+    border-bottom: 1px solid #ccc;
+}
 
-
-
-
+#block-system-main footer a{
+	display: inline-block;
+	color: #e23d22;
+}
