@@ -65,6 +65,17 @@ create the docker compose file for production
 
 and replace some values with production settings (exposed port and resources limits)
 
+## SSL
+
+for SSL enabled environnement (https), it's recommended to force HTTPS by adding following rules in the root **.htaccess** file :
+
+```
+# Redirect to HTTPS
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+```
+
 # Manage containers
 
 to run containers detached : 
