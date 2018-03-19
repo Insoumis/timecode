@@ -66,7 +66,7 @@ $(document).ready(function(e) {
             });
 
             //Ajoute le twitter du compte vidéo FI en source
-            text += ' via @videosFI';
+            text += ' via @videos_fi';
 
             //Ouvre la fenêtre de partage Twitter
             window.open('http://twitter.com/share?url='+encodeURIComponent(url_for_twitter)+'&text='+encodeURIComponent(text), '', 'left=0,top=0,width=550,height=450,personalbar=0,toolbar=0,scrollbars=0,resizable=0');
