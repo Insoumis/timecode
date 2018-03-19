@@ -3,7 +3,7 @@ version: '2.2'
 services:
 
   app:
-    image: drupal:7.56-apache
+    image: drupal:7.57-apache
     volumes:
       - ./www/sites:/var/www/html/sites
       - /var/www/html
